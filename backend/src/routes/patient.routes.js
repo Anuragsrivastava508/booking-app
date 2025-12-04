@@ -1,0 +1,60 @@
+import { Router } from "express";
+import {
+  registerPatient,
+  loginPatient,
+  refreshAccessToken,
+  logoutPatient,
+  updatePassword,
+  updateInfo,
+  updateProfilePic,
+  getCurrentPatient,
+  getRecentPatients,
+  getAllDoctorsForPatient,
+  getActiveAppointments,
+  getCompletedAppointments,
+  getMyDoctors,
+  getMyAppointments,
+  generateMyReportPdf,
+  resendVerificationCode,
+  verifyEmail,
+} from "../controllers/patient.controllers.js";
+import { verifyJwt } from "../middlewares/auth.middleware.js";
+import { upload } from "../middlewares/multer.middlewares.js";
+
+const router = Router();
+// post, get, patch, delete
+//unsecured routes
+router.route("/register").post(upload.single("profilePic"), registerPatient);
+router.route("/login").post(loginPatient);
+router.route("/refreshToken").post(refreshAccessToken);
+
+// for email verification
+router.route("/verify-email").post(verifyEmail);
+router.route("/resend-verification").post(resendVerificationCode);
+
+//secured routes
+router.route("/logout").post(verifyJwt, logoutPatient);
+
+// profile update routes
+router.route("/updateInfo").put(verifyJwt, updateInfo);
+
+router.route("/updatePassword").post(verifyJwt, updatePassword);
+router
+  .route("/updateProfilePic")
+  .post(verifyJwt, upload.single("ProfilePicture"), updateProfilePic);
+router.route("/me").get(verifyJwt, getCurrentPatient);
+router.route("/doctors").get(verifyJwt, getAllDoctorsForPatient);
+router.route("/myDoctors").get(verifyJwt, getMyDoctors);
+router.route("/appointments").get(verifyJwt, getMyAppointments);
+router.route("/appointments/active").get(verifyJwt, getActiveAppointments);
+router
+  .route("/appointments/completed")
+  .get(verifyJwt, getCompletedAppointments);
+
+// PDF report for logged-in patient
+router.route("/reports/my.pdf").get(verifyJwt, generateMyReportPdf);
+
+//admin routes
+router.route("/recent").get(getRecentPatients);
+
+export default router;

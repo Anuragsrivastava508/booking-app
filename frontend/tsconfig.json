@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "noEmit": true,
+    "incremental": true,
+    "module": "esnext",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/app/patient/(auth)/signup/page.jsx",
+    "src/app/doctor/patient/add/page.jsx",
+    "src/app/patient/prescriptions/[id]/page.jsx",
+    "src/app/doctor/logs/medications/page.jsx",
+    "src/app/patient/notification/page.jsx",
+    "src/app/doctor/logs/symptoms/page.jsx",
+    "src/app/doctor/notifications/page.jsx"
+  ],
+  "exclude": ["node_modules"]
+}

@@ -1,0 +1,1 @@
+//view all appointments, total appointments, appointments by status

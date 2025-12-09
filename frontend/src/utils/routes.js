@@ -6,6 +6,7 @@ export const ROUTES = {
 
   // Admin routes
   ADMIN_LOGIN: "/admin/login",
+  ADMIN_SIGNUP: "/admin/signup", 
   ADMIN_DASHBOARD: "/admin/dashboard",
   ADMIN_DOCTORS: "/admin/doctors",
   ADMIN_ADD_DOCTOR: "/admin/doctors/add",

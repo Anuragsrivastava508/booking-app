@@ -32,30 +32,32 @@ export default function AdminLoginPage() {
     }
   }, []);
 
+
+const handleLogin = async (e) => {
+  e.preventDefault();
+  setIsLoading(true);
+  setError("");
+
+  try {
+    const response = await API.post("/admin/login", { email, password });
+    const data = response.data;
+
+    localStorage.setItem("user", JSON.stringify(data.data));
+    login(data.data);
+    toast.success("Login successful! Redirecting...");
+    router.replace("/admin/dashboard");
+  } catch (err) {
+    const errorMessage = err.response?.data?.message || "Login failed";
+    setError(errorMessage);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
   //login logic
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
+  
 
-    try {
-      const response = await API.post("/admin/login", { email, password });
-      const data = response.data;
-      console.log("Login response data:", data);
-      console.log("user data inside data object", data.data);
-
-      localStorage.setItem("user", JSON.stringify(data.data));
-      login(data.data);
-      toast.success("Login successful! Redirecting...");
-      router.replace("/admin/dashboard");
-    } catch (err) {
-      console.error("Admin login error:", err);
-      const errorMessage = err.response?.data?.message || err.message || "Login failed. Please check your credentials.";
-      setError(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -65,7 +67,7 @@ export default function AdminLoginPage() {
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex items-center">
               <h1 className="text-xl font-bold bg-gradient-to-r from-red-600 to-pink-600  bg-clip-text text-transparent">
-                Smart Care Assistant
+              Health Care Assistant
               </h1>
             </Link>
             <div className="text-sm text-gray-500">Admin Portal</div>
@@ -99,7 +101,7 @@ export default function AdminLoginPage() {
                 Admin Login
               </h2>
               <p className="text-gray-600">
-                Access the Smart Care Assistant admin panel
+                Access the Health Care Assistant admin panel
               </p>
             </div>
 

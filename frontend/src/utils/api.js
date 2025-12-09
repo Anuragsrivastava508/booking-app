@@ -23,6 +23,7 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+
 export default API;
 
 const triggerBrowserDownload = (blob, filename) => {
@@ -36,6 +37,29 @@ const triggerBrowserDownload = (blob, filename) => {
   window.URL.revokeObjectURL(url);
 };
 
+/* ⬇⬇ IS LINE KE BILKUL YAHA PASTE KARO */
+
+export const registerAdmin = async (adminData) => {
+  const response = await API.post("/admin/register", adminData);
+  return response.data;
+};
+
+export const loginAdmin = async (email, password) => {
+  const response = await API.post("/admin/login", { email, password });
+  return response.data;
+};
+
+
+export const registerDoctor = async (formData) => {
+  const response = await API.post("/doctors/register", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data;
+};
+
+
+
+/* USKE BAAD code jaise chal raha hai waise hi rehne do */
 export const downloadDoctorReportPdf = async () => {
   const res = await API.get(`/doctors/reports/summary.pdf`, {
     responseType: "blob",
@@ -59,6 +83,8 @@ export const downloadMyPatientReportPdf = async () => {
   const blob = new Blob([res.data], { type: "application/pdf" });
   triggerBrowserDownload(blob, `my-health-report.pdf`);
 };
+
+
 
 // doctor apis:
 export const updateDoctorProfile = async (data) => {

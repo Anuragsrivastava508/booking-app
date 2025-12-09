@@ -27,6 +27,9 @@ import { upload } from "../middlewares/multer.middlewares.js";
 
 const router = Router();
 
+// 🔥 Doctor Signup — unsecured
+router.post("/register", upload.single("profilePic"), registerDoctor);
+
 //unsecured routes
 router.route("/login").post(loginDoctor);
 router.route("/refreshToken").post(refreshAccessToken);

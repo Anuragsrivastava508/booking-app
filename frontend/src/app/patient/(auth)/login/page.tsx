@@ -68,7 +68,7 @@ export default function LoginPage() {
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex items-center">
               <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                Smart Care Assistant
+                Health Care Assistant
               </h1>
             </Link>
             <Link

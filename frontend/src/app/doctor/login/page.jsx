@@ -121,7 +121,7 @@ export default function DoctorLoginPage() {
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex items-center">
               <h1 className="text-xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                Smart Care Assistant
+               health Care Assistant
               </h1>
             </Link>
             <div className="text-sm text-gray-500">Doctor Portal</div>

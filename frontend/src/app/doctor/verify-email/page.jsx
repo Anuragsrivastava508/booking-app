@@ -273,7 +273,7 @@ export default function DoctorEmailVerificationPage() {
           {/* Back to Registration */}
           <div className="mt-6 text-center">
             <button
-              onClick={() => router.push("/admin/doctors/add")}
+              onClick={() => router.push("/doctor/signup")}
               className="text-gray-600 hover:text-gray-700 text-sm flex items-center justify-center mx-auto"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />

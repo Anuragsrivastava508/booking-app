@@ -70,7 +70,13 @@ const handleLogin = async (e) => {
               Health Care Assistant
               </h1>
             </Link>
-            <div className="text-sm text-gray-500">Admin Portal</div>
+             <Link
+              href="/admin/signup"
+              className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
+            >
+           Admin Portal
+            </Link>
+            {/* <div className="text-sm text-gray-500">Admin Portal</div> */}
           </div>
         </div>
       </header>

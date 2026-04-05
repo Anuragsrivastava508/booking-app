@@ -212,7 +212,7 @@ export default function LoginPage() {
               </div>
 
               {/* Forgot Password */}
-              {/* <div className="flex items-center justify-between">
+             <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-600">
                   Don't have an account?{" "}
                   <Link
@@ -228,7 +228,7 @@ export default function LoginPage() {
                 >
                   Forgot password?
                 </Link>
-              </div> */}
+              </div> 
 
               {/* Error Message */}
               {error && (
@@ -306,8 +306,8 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Social Login Buttons */}
-            {/* <div className="mt-6 grid grid-cols-2 gap-3">
+            {/* Social Login Buttons */} 
+           <div className="mt-6 grid grid-cols-2 gap-3">
               <button className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors duration-200">
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path
@@ -339,7 +339,7 @@ export default function LoginPage() {
                 </svg>
                 <span className="ml-2">Twitter</span>
               </button>
-            </div> */}
+            </div>
 
             {/* Sign Up Link */}
             <div className="mt-8 text-center">

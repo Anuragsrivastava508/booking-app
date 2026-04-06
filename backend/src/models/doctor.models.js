@@ -74,7 +74,8 @@ const doctorSchema = new Schema(
     addedBy: {
       type: Schema.Types.ObjectId,
       ref: "Admin",
-      required: true,
+      required: false,
+      
     },
     status: {
       type: String,

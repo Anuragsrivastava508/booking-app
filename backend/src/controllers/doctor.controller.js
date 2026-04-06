@@ -18,114 +18,230 @@ import crypto from "crypto";
 import { sendEmail } from "../utils/email.js";
 import { verificationCodeTemplate } from "../utils/emailTemplates.js";
 
-const registerDoctor = asyncHandler(async (req, res) => {
-  const { email, password, fullname, gender, age, phone, address } = req.body;
+// const registerDoctor = asyncHandler(async (req, res) => {
+//   const { email, password, fullname, gender, age, phone, address } = req.body;
 
-  //check whether all fields are passed from the request
+//   //check whether all fields are passed from the request
+//   if (
+//     [email, password, fullname, gender, phone].some(
+//       (field) => typeof field !== "string" || !field.trim()
+//     ) ||
+//     typeof age !== "number" ||
+//     !address ||
+//     typeof address !== "object"
+//   ) {
+//     throw new ApiError(400, "Validation failed: Missing required fields");
+//   }
+
+//   //check if user already exist
+//   const DoctorAlreadyExist = await Doctor.findOne({
+//     email,
+//   });
+
+//   if (DoctorAlreadyExist) {
+//     throw new ApiError(400, `User with email: ${email} already exist`);
+//   }
+
+//   if (age < 1 || age > 100) {
+//     throw new ApiError(400, "Age is invalid");
+//   }
+
+//   //get the profile picture path
+//   const profilePicLocalPath = req.files?.profilePic?.[0]?.path;
+
+//   //upload image to cloudinary
+//   let profilePic;
+//   if (profilePicLocalPath) {
+//     try {
+//       profilePic = await uploadOnCloudinary(profilePicLocalPath);
+//       console.log("Profile picture uploaded successfully");
+//     } catch (error) {
+//       console.log("profile pic upload failed", error);
+//       throw new ApiError(500, "Failed to upload Profile picture");
+//     }
+//   }
+
+//   //create the doctor
+//   try {
+//     const newDoctor = await Doctor.create({
+//       email,
+//       fullname,
+//       password,
+//       profilePic: profilePic?.url || "",
+//       gender,
+//       age,
+//       phone,
+//       address,
+//     });
+
+//     // Generate verification code and email it
+//     const code = Math.floor(100000 + Math.random() * 900000).toString();
+//     const codeHash = crypto.createHash("sha256").update(code).digest("hex");
+//     const codeExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+//     newDoctor.emailVerificationCodeHash = codeHash;
+//     newDoctor.emailVerificationExpiresAt = codeExpiry;
+//     await newDoctor.save({ validateBeforeSave: false });
+
+//     try {
+//       const html = verificationCodeTemplate({
+//         name: newDoctor.fullname,
+//         code,
+//         appUrl: process.env.APP_URL,
+//       });
+//       await sendEmail({
+//         to: newDoctor.email,
+//         subject: "Verify your email",
+//         html,
+//       });
+//     } catch (emailErr) {
+//       console.error("Failed to send verification email:", emailErr);
+//     }
+
+//     const createdDoctor = await Doctor.findById(newDoctor.id).select(
+//       "-password -refreshToken"
+//     );
+
+//     if (!createdDoctor) {
+//       throw new ApiError(
+//         500,
+//         "Something went wrong while registering the user"
+//       );
+//     }
+
+//     res
+//       .status(200)
+//       .json(
+//         new ApiResponse(200, createdDoctor, "User registered Successfully")
+//       );
+//   } catch (error) {
+//     console.log("User creation failed", error);
+//     if (profilePic) {
+//       deleteFromCloudinary(profilePic.public_id);
+//     }
+//     throw new ApiError(
+//       500,
+//       "Something went wrong while creating the user and images were deleted"
+//     );
+//   }
+// });
+const registerDoctor = asyncHandler(async (req, res) => {
+  const {
+    email,
+    password,
+    fullname,
+    gender,
+    age,
+    phone,
+    experience,
+    about,
+    specialization,
+    qualifications,
+  } = req.body;
+
+  // address fix
+  const {
+    "address.street": street,
+    "address.city": city,
+    "address.state": state,
+    "address.zip": zip,
+    "address.country": country,
+  } = req.body;
+
+  const address = {
+    street: street || "",
+    city: city || "",
+    state: state || "",
+    zip: zip || "",
+    country: country || "India",
+  };
+
+  const ageNum = Number(age);
+
+  // ✅ validation
   if (
-    [email, password, fullname, gender, phone].some(
+    [email, password, fullname, gender, phone, about].some(
       (field) => typeof field !== "string" || !field.trim()
     ) ||
-    typeof age !== "number" ||
-    !address ||
-    typeof address !== "object"
+    isNaN(ageNum)
   ) {
     throw new ApiError(400, "Validation failed: Missing required fields");
   }
 
-  //check if user already exist
-  const DoctorAlreadyExist = await Doctor.findOne({
-    email,
-  });
-
+  const DoctorAlreadyExist = await Doctor.findOne({ email });
   if (DoctorAlreadyExist) {
     throw new ApiError(400, `User with email: ${email} already exist`);
   }
 
-  if (age < 1 || age > 100) {
-    throw new ApiError(400, "Age is invalid");
-  }
+  // multer fix
+  const profilePicLocalPath = req.file?.path;
 
-  //get the profile picture path
-  const profilePicLocalPath = req.files?.profilePic?.[0]?.path;
-
-  //upload image to cloudinary
   let profilePic;
   if (profilePicLocalPath) {
-    try {
-      profilePic = await uploadOnCloudinary(profilePicLocalPath);
-      console.log("Profile picture uploaded successfully");
-    } catch (error) {
-      console.log("profile pic upload failed", error);
-      throw new ApiError(500, "Failed to upload Profile picture");
-    }
+    profilePic = await uploadOnCloudinary(profilePicLocalPath);
   }
 
-  //create the doctor
+  // ✅ FIX: array handling
+  const specializationArr = specialization
+    ? specialization.split(",").map((s) => s.trim())
+    : [];
+
+  const qualificationsArr = qualifications
+    ? qualifications.split(",").map((q) => q.trim())
+    : [];
+
+  // ✅ FINAL CREATE
+  const newDoctor = await Doctor.create({
+    email,
+    fullname,
+    password,
+    profilePic: profilePic?.url || "",
+    gender,
+    age: ageNum,
+    phone,
+    experience,
+    about,
+    specialization: specializationArr,
+    qualifications: qualificationsArr,
+    address,
+    status: "pending", // optional but good
+  });
+
+  // 🔥 email verification
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  const codeHash = crypto.createHash("sha256").update(code).digest("hex");
+  const codeExpiry = new Date(Date.now() + 10 * 60 * 1000);
+
+  newDoctor.emailVerificationCodeHash = codeHash;
+  newDoctor.emailVerificationExpiresAt = codeExpiry;
+  await newDoctor.save({ validateBeforeSave: false });
+
   try {
-    const newDoctor = await Doctor.create({
-      email,
-      fullname,
-      password,
-      profilePic: profilePic?.url || "",
-      gender,
-      age,
-      phone,
-      address,
+    const html = verificationCodeTemplate({
+      name: newDoctor.fullname,
+      code,
+      appUrl: process.env.APP_URL,
     });
 
-    // Generate verification code and email it
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    const codeHash = crypto.createHash("sha256").update(code).digest("hex");
-    const codeExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-
-    newDoctor.emailVerificationCodeHash = codeHash;
-    newDoctor.emailVerificationExpiresAt = codeExpiry;
-    await newDoctor.save({ validateBeforeSave: false });
-
-    try {
-      const html = verificationCodeTemplate({
-        name: newDoctor.fullname,
-        code,
-        appUrl: process.env.APP_URL,
-      });
-      await sendEmail({
-        to: newDoctor.email,
-        subject: "Verify your email",
-        html,
-      });
-    } catch (emailErr) {
-      console.error("Failed to send verification email:", emailErr);
-    }
-
-    const createdDoctor = await Doctor.findById(newDoctor.id).select(
-      "-password -refreshToken"
-    );
-
-    if (!createdDoctor) {
-      throw new ApiError(
-        500,
-        "Something went wrong while registering the user"
-      );
-    }
-
-    res
-      .status(200)
-      .json(
-        new ApiResponse(200, createdDoctor, "User registered Successfully")
-      );
-  } catch (error) {
-    console.log("User creation failed", error);
-    if (profilePic) {
-      deleteFromCloudinary(profilePic.public_id);
-    }
-    throw new ApiError(
-      500,
-      "Something went wrong while creating the user and images were deleted"
-    );
+    await sendEmail({
+      to: newDoctor.email,
+      subject: "Verify your email",
+      html,
+    });
+  } catch (err) {
+    console.log("Email error:", err);
   }
-});
 
+  const createdDoctor = await Doctor.findById(newDoctor._id).select(
+    "-password -refreshToken"
+  );
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, createdDoctor, "Doctor registered successfully")
+    );
+});
 const generateAccessRefreshToken = async (doctorId) => {
   try {
     const doctor = await Doctor.findById(doctorId);

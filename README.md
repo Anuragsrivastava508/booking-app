@@ -3,7 +3,6 @@
 A full‑stack healthcare assistant with role‑based portals for Admin, Doctor, and Patient. It provides patient onboarding, appointments, prescriptions, vitals tracking, medication logs with scheduled generation, and downloadable PDF reports.
 
 ## Monorepo Structure
-
 - `backend/`: Node.js + Express + MongoDB API
 - `frontend/`: Next.js app (React)
 
